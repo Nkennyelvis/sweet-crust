@@ -21,19 +21,24 @@ const OUT = path.join(ROOT, "out");
 const WORKTREE = path.join(ROOT, "..", ".sweet-crust-gh-pages");
 const BRANCH = "gh-pages";
 
-const run = (cmd, args, opts = {}) =>
-  execFileSync(cmd, args, { stdio: "inherit", shell: process.platform === "win32", ...opts });
+// `npx` is a .cmd on Windows and needs a shell; git is a real executable and
+// must NOT get one — with shell:true the commit message's spaces are re-split
+// into separate pathspecs and the commit fails.
+const npx = (args, opts = {}) =>
+  execFileSync("npx", args, { stdio: "inherit", shell: process.platform === "win32", ...opts });
 
-const capture = (cmd, args, opts = {}) =>
-  execFileSync(cmd, args, { encoding: "utf8", shell: process.platform === "win32", ...opts }).trim();
+const git = (args, opts = {}) => execFileSync("git", args, { stdio: "inherit", ...opts });
+
+const gitOut = (args, opts = {}) =>
+  execFileSync("git", args, { encoding: "utf8", ...opts }).trim();
 
 console.log("\n1/3  Seeding catalogue and demo data…");
-run("npx", ["tsx", "prisma/seed.ts"]);
-run("npx", ["tsx", "prisma/seed-demo.ts"]);
+npx(["tsx", "prisma/seed.ts"]);
+npx(["tsx", "prisma/seed-demo.ts"]);
 
 console.log("\n2/3  Building static export…");
 rmSync(OUT, { recursive: true, force: true });
-run("npx", ["next", "build"], { env: { ...process.env, DEMO_EXPORT: "1" } });
+npx(["next", "build"], { env: { ...process.env, DEMO_EXPORT: "1" } });
 if (!existsSync(path.join(OUT, "index.html"))) {
   console.error("Build produced no out/index.html — aborting.");
   process.exit(1);
@@ -42,21 +47,21 @@ if (!existsSync(path.join(OUT, "index.html"))) {
 console.log("\n3/3  Publishing to gh-pages…");
 rmSync(WORKTREE, { recursive: true, force: true });
 try {
-  run("git", ["worktree", "remove", "--force", WORKTREE]);
+  git(["worktree", "prune"]);
 } catch {
-  // No stale worktree registered — fine.
+  // Nothing to prune.
 }
 
 const branchExists = (() => {
   try {
-    capture("git", ["rev-parse", "--verify", BRANCH]);
+    gitOut(["rev-parse", "--verify", BRANCH]);
     return true;
   } catch {
     return false;
   }
 })();
 
-run("git", ["worktree", "add", ...(branchExists ? [] : ["--orphan"]), "-B", BRANCH, WORKTREE]);
+git(["worktree", "add", ...(branchExists ? [] : ["--orphan"]), "-B", BRANCH, WORKTREE]);
 
 // Clear whatever the branch held, then drop the fresh build in its place.
 for (const entry of readdirSync(WORKTREE)) {
@@ -69,16 +74,15 @@ cpSync(OUT, WORKTREE, { recursive: true });
 // an underscore — i.e. all of _next/, so every script and stylesheet 404s.
 writeFileSync(path.join(WORKTREE, ".nojekyll"), "");
 
-run("git", ["add", "-A"], { cwd: WORKTREE });
-const dirty = capture("git", ["status", "--porcelain"], { cwd: WORKTREE });
+git(["add", "-A"], { cwd: WORKTREE });
+const dirty = gitOut(["status", "--porcelain"], { cwd: WORKTREE });
 if (dirty) {
-  run("git", ["commit", "-m", `chore: publish static preview (${new Date().toISOString().slice(0, 16)})`], {
-    cwd: WORKTREE,
-  });
-  run("git", ["push", "-u", "origin", BRANCH], { cwd: WORKTREE });
+  const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+  git(["commit", "-m", `chore: publish static preview (${stamp})`], { cwd: WORKTREE });
+  git(["push", "-f", "-u", "origin", BRANCH], { cwd: WORKTREE });
 } else {
   console.log("No changes to publish.");
 }
 
-run("git", ["worktree", "remove", "--force", WORKTREE]);
+git(["worktree", "remove", "--force", WORKTREE]);
 console.log("\nDone → https://nkennyelvis.github.io/sweet-crust/");
