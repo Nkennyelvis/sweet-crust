@@ -21,6 +21,11 @@ const OUT = path.join(ROOT, "out");
 const WORKTREE = path.join(ROOT, "..", ".sweet-crust-gh-pages");
 const BRANCH = "gh-pages";
 
+// Which remote to publish to; defaults to origin.
+//   node scripts/deploy-demo.mjs            → origin
+//   node scripts/deploy-demo.mjs uly        → the `uly` remote
+const REMOTE = process.argv[2] ?? "origin";
+
 // `npx` is a .cmd on Windows and needs a shell; git is a real executable and
 // must NOT get one — with shell:true the commit message's spaces are re-split
 // into separate pathspecs and the commit fails.
@@ -32,13 +37,20 @@ const git = (args, opts = {}) => execFileSync("git", args, { stdio: "inherit", .
 const gitOut = (args, opts = {}) =>
   execFileSync("git", args, { encoding: "utf8", ...opts }).trim();
 
+// A GitHub project site lives at /<repo>, so basePath must equal the repo name
+// on whichever remote we are publishing to — get it wrong and every asset 404s.
+const remoteUrl = execFileSync("git", ["remote", "get-url", REMOTE], { encoding: "utf8" }).trim();
+const repoName = remoteUrl.replace(/\.git$/, "").split("/").pop();
+const basePath = `/${repoName}`;
+console.log(`Publishing to "${REMOTE}" (${remoteUrl})\nbasePath: ${basePath}`);
+
 console.log("\n1/3  Seeding catalogue and demo data…");
 npx(["tsx", "prisma/seed.ts"]);
 npx(["tsx", "prisma/seed-demo.ts"]);
 
 console.log("\n2/3  Building static export…");
 rmSync(OUT, { recursive: true, force: true });
-npx(["next", "build"], { env: { ...process.env, DEMO_EXPORT: "1" } });
+npx(["next", "build"], { env: { ...process.env, DEMO_EXPORT: "1", DEMO_BASE_PATH: basePath } });
 if (!existsSync(path.join(OUT, "index.html"))) {
   console.error("Build produced no out/index.html — aborting.");
   process.exit(1);
@@ -79,10 +91,12 @@ const dirty = gitOut(["status", "--porcelain"], { cwd: WORKTREE });
 if (dirty) {
   const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
   git(["commit", "-m", `chore: publish static preview (${stamp})`], { cwd: WORKTREE });
-  git(["push", "-f", "-u", "origin", BRANCH], { cwd: WORKTREE });
+  git(["push", "-f", REMOTE, `${BRANCH}:${BRANCH}`], { cwd: WORKTREE });
 } else {
   console.log("No changes to publish.");
 }
 
 git(["worktree", "remove", "--force", WORKTREE]);
-console.log("\nDone → https://nkennyelvis.github.io/sweet-crust/");
+
+const owner = remoteUrl.replace(/\.git$/, "").split("/").slice(-2)[0];
+console.log(`\nDone → https://${owner.toLowerCase()}.github.io${basePath}/`);

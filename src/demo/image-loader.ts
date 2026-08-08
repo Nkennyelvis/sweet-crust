@@ -9,9 +9,10 @@
  * Only used in the demo build (see next.config.ts); the real build serves
  * from the domain root and uses the normal optimizer.
  */
-const BASE_PATH = "/sweet-crust";
+// Inlined at build time from next.config.ts, so it always matches basePath.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export default function demoImageLoader({ src }: { src: string; width: number; quality?: number }) {
-  if (!src.startsWith("/")) return src;
+  if (!BASE_PATH || !src.startsWith("/")) return src;
   return src.startsWith(`${BASE_PATH}/`) ? src : `${BASE_PATH}${src}`;
 }

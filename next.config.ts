@@ -14,13 +14,18 @@ import type { NextConfig } from "next";
  */
 const isDemoExport = process.env.DEMO_EXPORT === "1";
 
+// A GitHub project site is served from /<repo>, so the base path has to match
+// the repo name exactly — `sweet-crust` and `sweet_crust` are different sites.
+// scripts/deploy-demo.mjs derives this from the target remote.
+const demoBasePath = process.env.DEMO_BASE_PATH ?? "/sweet-crust";
+
 const nextConfig: NextConfig = isDemoExport
   ? {
       output: "export",
-      // Readable from client components too, so forms know to fake it.
-      env: { NEXT_PUBLIC_DEMO: "1" },
-      // Project pages are served from /<repo>, not the domain root.
-      basePath: "/sweet-crust",
+      // Readable from client components too, so forms know to fake it and the
+      // image loader knows what prefix to add.
+      env: { NEXT_PUBLIC_DEMO: "1", NEXT_PUBLIC_BASE_PATH: demoBasePath },
+      basePath: demoBasePath,
       // Pages has no image optimizer. A custom loader rather than
       // `unoptimized` because unoptimized images skip basePath entirely and
       // every photo 404s — the loader adds the prefix. See the loader file.
