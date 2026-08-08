@@ -1,26 +1,210 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdf9f3;
+  --foreground: #241419;
+
+  /* Sweet Crust brand palette — deep burgundy primary with champagne gold
+     and soft blush, per the client's brief.
+
+     `wine-*`, `gold-*` and `blush-*` are fixed brand colors used for
+     deliberately always-dark chrome (hero scrim, footer, admin header) and
+     the accents — they do NOT change between light/dark mode.
+     `cream-*` (backgrounds), `ink-*` (text) and `surface` (cards/inputs) DO
+     change — see the dark-mode block below. */
+  --color-wine-950: #2b0710;
+  --color-wine-900: #470b1c;
+  --color-wine-800: #631026;
+  --color-wine-700: #7d1631;
+  --color-wine-600: #9a2242;
+  --color-wine-500: #b83a59;
+
+  /* Deep enough to carry the script eyebrows on cream (5.5:1). The lighter
+     champagne golds are decoration only — they fail as text on a pale page. */
+  --color-gold-600: #7a5c1c;
+  --color-gold-500: #bd9645;
+  --color-gold-400: #d4b473;
+  --color-gold-300: #e8d5aa;
+
+  --color-blush-500: #e2a4ae;
+  /* blush tints are soft *backgrounds*, so they flip with the page. */
+  --color-blush-300: #f2ccd2;
+  --color-blush-100: #fbeaed;
+
+  /* The brand colour used for TEXT, borders and focus rings on page surfaces
+     — prices, links, active states. It has to flip: `wine-800` is a deep
+     burgundy that scores 1.37:1 against the dark surface, i.e. invisible.
+     Light mode keeps the exact burgundy; dark mode swaps to the brief's soft
+     blush, which reads at ~8.5:1. Use `wine-*` for FILLS, `accent` for text. */
+  --color-accent: #631026;
+
+  /* Status text also has to flip — a fixed emerald-700 / red-700 goes
+     dark-on-dark, which would hide checkout validation errors. */
+  --color-positive: #047857;
+  --color-negative: #b91c1c;
+
+  /* `cream-*` are page backgrounds and DO flip in dark mode. */
+  --color-cream-50: #fdf9f3;
+  --color-cream-100: #f7efe3;
+  --color-cream-200: #ebdfcd;
+
+  /* `paper-*` are the same warm ivories but PINNED — they never flip. Use
+     them for anything sitting on always-dark chrome (hero scrim, footer,
+     wine buttons, the logo mark, the mobile menu, admin header). Using
+     `cream-*` there would turn the text dark-on-dark in dark mode. */
+  --color-paper-50: #fdf9f3;
+  --color-paper-100: #f7efe3;
+  --color-paper-200: #ebdfcd;
+
+  --color-ink-900: #241419;
+  --color-ink-700: #5c454c;
+
+  --color-surface: #ffffff;
+}
+
+/* Dark mode: applied automatically when the visitor's OS/browser prefers
+   dark and they haven't explicitly chosen light on the site, OR forced via
+   the toggle (`data-theme="dark"` on <html>, set by ThemeToggle). The wine
+   and gold brand ramps deliberately stay put — only the paper the site is
+   printed on changes. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #1a0d11;
+    --foreground: #f7ece9;
+
+    --color-cream-50: #1a0d11;
+    --color-cream-100: #24141a;
+    --color-cream-200: #351e26;
+
+    --color-blush-300: #4a2029;
+    --color-blush-100: #33171f;
+
+    --color-accent: #e2a4ae;
+    --color-gold-600: #d4b473;
+    --color-positive: #34d399;
+    --color-negative: #fca5a5;
+
+    --color-ink-900: #f7ece9;
+    --color-ink-700: #d3bcbf;
+
+    --color-surface: #24141a;
+  }
+}
+
+:root[data-theme="dark"] {
+  --background: #1a0d11;
+  --foreground: #f7ece9;
+
+  --color-cream-50: #1a0d11;
+  --color-cream-100: #24141a;
+  --color-cream-200: #351e26;
+
+  --color-blush-300: #4a2029;
+  --color-blush-100: #33171f;
+
+  --color-accent: #e2a4ae;
+  --color-gold-600: #d4b473;
+
+  --color-ink-900: #f7ece9;
+  --color-ink-700: #d3bcbf;
+
+  --color-surface: #24141a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-script: var(--font-script);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-wine-950: var(--color-wine-950);
+  --color-wine-900: var(--color-wine-900);
+  --color-wine-800: var(--color-wine-800);
+  --color-wine-700: var(--color-wine-700);
+  --color-wine-600: var(--color-wine-600);
+  --color-wine-500: var(--color-wine-500);
+
+  --color-gold-600: var(--color-gold-600);
+  --color-gold-500: var(--color-gold-500);
+  --color-gold-400: var(--color-gold-400);
+  --color-gold-300: var(--color-gold-300);
+
+  --color-blush-500: var(--color-blush-500);
+  --color-blush-300: var(--color-blush-300);
+  --color-blush-100: var(--color-blush-100);
+
+  --color-accent: var(--color-accent);
+  --color-positive: var(--color-positive);
+  --color-negative: var(--color-negative);
+
+  --color-cream-50: var(--color-cream-50);
+  --color-cream-100: var(--color-cream-100);
+  --color-cream-200: var(--color-cream-200);
+
+  --color-paper-50: var(--color-paper-50);
+  --color-paper-100: var(--color-paper-100);
+  --color-paper-200: var(--color-paper-200);
+
+  --color-ink-900: var(--color-ink-900);
+  --color-ink-700: var(--color-ink-700);
+
+  --color-surface: var(--color-surface);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Thin gold rule used to separate sections without a heavy border. */
+.gold-rule {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-gold-400) 20%,
+    var(--color-gold-400) 80%,
+    transparent
+  );
+}
+
+/* The small gold flourish that sits under section eyebrows, echoing the
+   "— ♥ —" divider on the brand's launch poster. */
+/* Deliberately sets no colour: the Eyebrow component picks the right gold for
+   its surface (deep `gold-600` on the cream page, light `gold-400` on dark
+   bands). Hard-coding a colour here beat the utility class and left dark-band
+   eyebrows at 2.96:1. The rules inherit it via currentColor. */
+.flourish {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flourish::before,
+.flourish::after {
+  content: "";
+  height: 1px;
+  width: 1.75rem;
+  background: currentColor;
+}
+
+/* Keyboard focus ring — gold on dark chrome, wine on light surfaces. */
+:focus-visible {
+  outline: 2px solid var(--color-gold-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

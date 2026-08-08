@@ -1,0 +1,146 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Suspense } from "react";
+import { ProductCard } from "@/components/ProductCard";
+import { ProductFilters } from "@/components/ProductFilters";
+import { Container, EmptyState, LinkButton, SectionHeading } from "@/components/ui";
+import { getCurrency } from "@/lib/currency-server";
+import { cn } from "@/lib/cn";
+import { getCategories, getProducts, PRODUCT_SORTS, type ProductSort } from "@/lib/products";
+
+export const metadata: Metadata = {
+  title: "Patisserie Menu",
+  description:
+    "Browse the full Sweet Crust patisserie — slow-fermented breads, celebration cakes and hand-laminated pastries, with prices in RWF or USD. Order online for pickup or delivery in Kigali.",
+};
+
+export default async function PatisseriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; q?: string; sort?: string }>;
+}) {
+  const params = await searchParams;
+  const sort = (PRODUCT_SORTS as readonly string[]).includes(params.sort ?? "")
+    ? (params.sort as ProductSort)
+    : "featured";
+
+  const [currency, categories, products] = await Promise.all([
+    getCurrency(),
+    getCategories(),
+    getProducts({ categorySlug: params.category, search: params.q, sort }),
+  ]);
+
+  const activeCategory = categories.find((c) => c.slug === params.category) ?? null;
+
+  function categoryHref(slug: string | null) {
+    const next = new URLSearchParams();
+    if (slug) next.set("category", slug);
+    if (params.q) next.set("q", params.q);
+    if (sort !== "featured") next.set("sort", sort);
+    const qs = next.toString();
+    return `/patisseries${qs ? `?${qs}` : ""}#menu`;
+  }
+
+  return (
+    <>
+      <section className="bg-wine-950 py-16 text-paper-50 sm:py-20">
+        <Container className="text-center">
+          <SectionHeading
+            align="center"
+            tone="dark"
+            eyebrow="The counter"
+            title={activeCategory ? activeCategory.name : "Patisserie Menu"}
+            subtitle={
+              activeCategory
+                ? activeCategory.description
+                : "Everything we bake, in one place. Breads are on the shelf today; cakes are made to order, so check the notice period before you plan around one."
+            }
+          />
+        </Container>
+      </section>
+
+      <section id="menu" className="scroll-mt-24 py-14 sm:py-20">
+        <Container>
+          <nav aria-label="Product categories" className="flex flex-wrap gap-2.5">
+            <CategoryPill href={categoryHref(null)} active={!activeCategory}>
+              All
+            </CategoryPill>
+            {categories.map((c) => (
+              <CategoryPill key={c.id} href={categoryHref(c.slug)} active={activeCategory?.id === c.id}>
+                {c.name}
+              </CategoryPill>
+            ))}
+          </nav>
+
+          <div className="mt-8">
+            {/* useSearchParams needs a Suspense boundary during prerender. */}
+            <Suspense fallback={<div className="h-11" />}>
+              <ProductFilters resultCount={products.length} />
+            </Suspense>
+          </div>
+
+          <div className="mt-10">
+            {products.length === 0 ? (
+              <EmptyState
+                title="Nothing matched that"
+                body={
+                  params.q
+                    ? `We could not find anything for “${params.q}”. Try a broader word, or browse a category.`
+                    : "This category is empty at the moment."
+                }
+                action={
+                  <LinkButton href="/patisseries" variant="outline">
+                    Show everything
+                  </LinkButton>
+                }
+              />
+            ) : (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} currency={currency} />
+                ))}
+              </div>
+            )}
+          </div>
+        </Container>
+      </section>
+
+      <section className="bg-cream-100 py-16">
+        <Container className="flex flex-col items-center gap-5 text-center">
+          <SectionHeading
+            align="center"
+            eyebrow="Not on the list?"
+            title="We make custom cakes too"
+            subtitle="Birthdays, weddings, graduations, office launches — tell us what you need and we will quote it."
+          />
+          <LinkButton href="/custom-cakes">Start a custom order</LinkButton>
+        </Container>
+      </section>
+    </>
+  );
+}
+
+function CategoryPill({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "rounded-full border px-5 py-2.5 text-sm font-medium transition-colors",
+        active
+          ? "border-wine-800 bg-wine-800 text-paper-50"
+          : "border-ink-900/15 text-ink-700 hover:border-accent/40 hover:text-accent",
+      )}
+    >
+      {children}
+    </Link>
+  );
+}
