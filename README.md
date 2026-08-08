@@ -171,6 +171,39 @@ Deliberately out of scope for this pass, in rough priority order:
 
 ---
 
+## The static preview (GitHub Pages)
+
+A click-through copy of the site is published to GitHub Pages so the client can
+browse it without a server:
+
+**https://nkennyelvis.github.io/sweet-crust/**
+
+GitHub Pages serves static files only — it cannot run Server Actions, read cookies, or
+reach a database. So the preview build swaps those for stand-ins:
+
+| Live site | Static preview |
+| --- | --- |
+| Checkout saves an order | Shows a sample confirmation; nothing is stored |
+| Contact / custom-cake forms save | Show their success state only |
+| Staff login checks a password | Any details get you in |
+| Admin status toggles update the database | Rendered read-only |
+| Category / search / sort filter on the server | Filter in the browser |
+| Prices switch RWF ↔ USD via a cookie | RWF only |
+
+Everything else — every page, all 42 products, the cart, the photography — is the real
+thing. A gold banner across the top says so, and the browser cart genuinely works.
+
+Rebuild and republish it with:
+
+```bash
+npm run demo:deploy
+```
+
+That seeds sample orders and enquiries (`prisma/seed-demo.ts`) so the admin walkthrough
+isn't empty, builds with `DEMO_EXPORT=1`, and pushes `out/` to the `gh-pages` branch.
+The demo-only code lives in `src/demo/` and is switched on by `next.config.ts`; nothing
+in the normal build path changes.
+
 ## Deploying
 
 Any Node host works. For a platform without a persistent disk (Vercel and similar), switch

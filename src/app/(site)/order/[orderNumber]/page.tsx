@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/currency";
 import { getCurrency } from "@/lib/currency-server";
 import { ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/enums";
 import { formatDate } from "@/lib/format";
+import { DEMO_ORDER, DEMO_ORDER_NUMBER, IS_DEMO } from "@/lib/demo";
 import { getOrderByNumber, orderWhatsAppMessage, zoneLabel } from "@/lib/orders";
 
 export const metadata: Metadata = {
@@ -14,13 +15,23 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
+// The static demo has no database, so it pre-renders one sample confirmation.
+// The live build leaves this route dynamic and looks the order up for real.
+export function generateStaticParams() {
+  return IS_DEMO ? [{ orderNumber: DEMO_ORDER_NUMBER }] : [];
+}
+
 export default async function OrderConfirmationPage({
   params,
 }: {
   params: Promise<{ orderNumber: string }>;
 }) {
   const { orderNumber } = await params;
-  const [order, currency] = await Promise.all([getOrderByNumber(orderNumber), getCurrency()]);
+  const [fetched, currency] = await Promise.all([
+    IS_DEMO ? Promise.resolve(null) : getOrderByNumber(orderNumber),
+    getCurrency(),
+  ]);
+  const order = IS_DEMO ? DEMO_ORDER : fetched;
   if (!order) notFound();
 
   const isDelivery = order.fulfillment === "DELIVERY";

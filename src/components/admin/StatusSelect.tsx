@@ -14,7 +14,9 @@ export function StatusSelect({
   current,
   options,
 }: {
-  action: (formData: FormData) => Promise<void>;
+  /** Omitted in the static demo — a Server Action cannot be handed to a client
+   *  component there, so the control renders read-only instead. */
+  action?: (formData: FormData) => Promise<void>;
   idName: string;
   idValue: string;
   current: string;
@@ -22,6 +24,24 @@ export function StatusSelect({
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [pending, startTransition] = useTransition();
+
+  if (!action) {
+    return (
+      <Select
+        aria-label="Status (read-only in this preview)"
+        value={current}
+        disabled
+        onChange={() => {}}
+        className="w-auto rounded-full py-2"
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </Select>
+    );
+  }
 
   return (
     <form ref={formRef} action={action}>

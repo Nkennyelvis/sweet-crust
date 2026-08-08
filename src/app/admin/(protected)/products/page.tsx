@@ -3,6 +3,7 @@ import Link from "next/link";
 import { toggleProductFlag } from "@/app/admin/products/actions";
 import { Badge, LinkButton } from "@/components/ui";
 import { formatRwf } from "@/lib/currency";
+import { IS_DEMO } from "@/lib/demo";
 import { prisma } from "@/lib/prisma";
 import { primaryImage } from "@/lib/products";
 
@@ -118,14 +119,24 @@ function FlagButton({
   flag: string;
   children: React.ReactNode;
 }) {
+  const classes =
+    "rounded-full border border-ink-900/15 px-3 py-1.5 text-xs font-medium text-ink-700 transition-colors hover:border-accent/40 hover:text-accent";
+
+  // Static export cannot attach a Server Action to a form, so the demo shows
+  // the control disabled rather than silently doing nothing on click.
+  if (IS_DEMO) {
+    return (
+      <button type="button" disabled title="Read-only in this preview" className={`${classes} opacity-50`}>
+        {children}
+      </button>
+    );
+  }
+
   return (
     <form action={toggleProductFlag}>
       <input type="hidden" name="productId" value={productId} />
       <input type="hidden" name="flag" value={flag} />
-      <button
-        type="submit"
-        className="rounded-full border border-ink-900/15 px-3 py-1.5 text-xs font-medium text-ink-700 transition-colors hover:border-accent/40 hover:text-accent"
-      >
+      <button type="submit" className={classes}>
         {children}
       </button>
     </form>

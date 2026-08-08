@@ -1,7 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { IS_DEMO } from "@/lib/demo";
 import { prisma } from "@/lib/prisma";
+
+// The demo bakes an editor page per seeded product so the walkthrough can open
+// any of them. The live build resolves these on demand instead.
+export async function generateStaticParams() {
+  if (!IS_DEMO) return [];
+  const products = await prisma.product.findMany({ select: { id: true } });
+  return products.map((p) => ({ id: p.id }));
+}
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

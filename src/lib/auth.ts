@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { IS_DEMO } from "@/lib/demo";
 import type { StaffRole } from "@/lib/enums";
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret-change-in-production";
@@ -41,6 +42,9 @@ export async function clearStaffSessionCookie() {
 }
 
 export async function getStaffSession(): Promise<StaffSession | null> {
+  // The static demo has no session cookie to read, so the admin walkthrough
+  // renders as a signed-in owner. Never true in the real build.
+  if (IS_DEMO) return { staffId: "demo", name: "Sweet Crust Owner", role: "OWNER" };
   const store = await cookies();
   const token = store.get(COOKIE_NAME)?.value;
   if (!token) return null;

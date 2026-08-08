@@ -4,6 +4,9 @@ import { BAKERY_INFO } from "@/lib/bakery-info";
 export const alt = "Sweet Crust — A Heart of Bakery in Africa";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+// The card never varies, and the static export refuses to emit a route that
+// hasn't opted in to being fully static.
+export const dynamic = "force-static";
 
 /**
  * The card shown when the site is shared on WhatsApp, Instagram or Facebook —

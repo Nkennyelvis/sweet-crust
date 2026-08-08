@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { BrandLockup } from "@/components/BrandLogo";
 import { getStaffSession } from "@/lib/auth";
+import { IS_DEMO } from "@/lib/demo";
 
 export const metadata: Metadata = {
   title: "Staff Login",
@@ -10,8 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLoginPage() {
-  // Already signed in — skip the form.
-  if (await getStaffSession()) redirect("/admin");
+  // Already signed in — skip the form. The demo always reports a session, so
+  // it would never show this page; keep it visible there since the login
+  // screen is part of what the client is being shown.
+  if (!IS_DEMO && (await getStaffSession())) redirect("/admin");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-wine-950 px-5 py-16">

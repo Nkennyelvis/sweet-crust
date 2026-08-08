@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sweetcrust.rw";
 
+// Built once from the catalogue; the static export requires the opt-in.
+export const dynamic = "force-static";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, categories] = await Promise.all([
     prisma.product.findMany({ where: { isActive: true }, select: { slug: true, updatedAt: true } }),

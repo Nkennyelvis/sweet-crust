@@ -6,7 +6,15 @@ import { ProductFilters } from "@/components/ProductFilters";
 import { Container, EmptyState, LinkButton, SectionHeading } from "@/components/ui";
 import { getCurrency } from "@/lib/currency-server";
 import { cn } from "@/lib/cn";
-import { getCategories, getProducts, PRODUCT_SORTS, type ProductSort } from "@/lib/products";
+import { IS_DEMO } from "@/lib/demo";
+import { DemoCatalogControls } from "@/demo/DemoCatalogControls";
+import {
+  getCategories,
+  getProducts,
+  startingPriceRwf,
+  PRODUCT_SORTS,
+  type ProductSort,
+} from "@/lib/products";
 
 export const metadata: Metadata = {
   title: "Patisserie Menu",
@@ -19,6 +27,10 @@ export default async function PatisseriesPage({
 }: {
   searchParams: Promise<{ category?: string; q?: string; sort?: string }>;
 }) {
+  // A static export has no request, so `searchParams` cannot be read at build
+  // time. The demo renders the whole catalogue once and filters in the browser.
+  if (IS_DEMO) return <DemoPatisseries />;
+
   const params = await searchParams;
   const sort = (PRODUCT_SORTS as readonly string[]).includes(params.sort ?? "")
     ? (params.sort as ProductSort)
@@ -101,6 +113,76 @@ export default async function PatisseriesPage({
                 ))}
               </div>
             )}
+          </div>
+        </Container>
+      </section>
+
+      <section className="bg-cream-100 py-16">
+        <Container className="flex flex-col items-center gap-5 text-center">
+          <SectionHeading
+            align="center"
+            eyebrow="Not on the list?"
+            title="We make custom cakes too"
+            subtitle="Birthdays, weddings, graduations, office launches — tell us what you need and we will quote it."
+          />
+          <LinkButton href="/custom-cakes">Start a custom order</LinkButton>
+        </Container>
+      </section>
+    </>
+  );
+}
+
+/** The whole catalogue, rendered once, filtered client-side. Demo build only. */
+async function DemoPatisseries() {
+  const [currency, categories, products] = await Promise.all([
+    getCurrency(),
+    getCategories(),
+    getProducts({}),
+  ]);
+
+  return (
+    <>
+      <section className="bg-wine-950 py-16 text-paper-50 sm:py-20">
+        <Container className="text-center">
+          <SectionHeading
+            align="center"
+            tone="dark"
+            eyebrow="The counter"
+            title="Patisserie Menu"
+            subtitle="Everything we bake, in one place. Breads are on the shelf today; cakes are made to order, so check the notice period before you plan around one."
+          />
+        </Container>
+      </section>
+
+      <section id="menu" className="scroll-mt-24 py-14 sm:py-20">
+        <Container>
+          <DemoCatalogControls
+            gridId="demo-grid"
+            categories={categories.map((c) => ({ slug: c.slug, name: c.name }))}
+            items={products.map((p) => ({
+              category: p.category.slug,
+              name: p.name.toLowerCase(),
+              blurb: p.description.toLowerCase(),
+              price: startingPriceRwf(p),
+              featured: p.isFeatured,
+              sort: p.sortOrder,
+            }))}
+          />
+
+          <div id="demo-grid" className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                data-category={product.category.slug}
+                data-name={product.name.toLowerCase()}
+                data-blurb={product.description.toLowerCase()}
+                data-price={startingPriceRwf(product)}
+                data-featured={product.isFeatured ? 1 : 0}
+                data-sort={product.sortOrder}
+              >
+                <ProductCard product={product} currency={currency} />
+              </div>
+            ))}
           </div>
         </Container>
       </section>

@@ -4,6 +4,7 @@ import { cn } from "@/lib/cn";
 import { formatRwf } from "@/lib/currency";
 import { OPEN_ORDER_STATUSES, ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/enums";
 import { formatDate } from "@/lib/format";
+import { IS_DEMO } from "@/lib/demo";
 import { prisma } from "@/lib/prisma";
 import { todayUtc } from "@/lib/validation";
 import type { Prisma } from "@prisma/client";
@@ -13,7 +14,10 @@ export default async function AdminOrdersPage({
 }: {
   searchParams: Promise<{ status?: string; due?: string }>;
 }) {
-  const params = await searchParams;
+  // No request to read query params from in a static export, so the demo
+  // lists every order and hides the filter pills rather than showing controls
+  // that cannot work.
+  const params = IS_DEMO ? {} : await searchParams;
   const status = (ORDER_STATUSES as readonly string[]).includes(params.status ?? "")
     ? (params.status as OrderStatus)
     : null;
@@ -55,19 +59,21 @@ export default async function AdminOrdersPage({
         {status && ` · ${ORDER_STATUS_LABELS[status]}`}
       </p>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        <Pill href={href({ status: null, due: null })} active={!status && !dueToday}>
-          All
-        </Pill>
-        <Pill href={href({ due: dueToday ? null : "today" })} active={dueToday}>
-          Due today
-        </Pill>
-        {ORDER_STATUSES.map((s) => (
-          <Pill key={s} href={href({ status: status === s ? null : s })} active={status === s}>
-            {ORDER_STATUS_LABELS[s]}
+      {!IS_DEMO && (
+        <div className="mt-6 flex flex-wrap gap-2">
+          <Pill href={href({ status: null, due: null })} active={!status && !dueToday}>
+            All
           </Pill>
-        ))}
-      </div>
+          <Pill href={href({ due: dueToday ? null : "today" })} active={dueToday}>
+            Due today
+          </Pill>
+          {ORDER_STATUSES.map((s) => (
+            <Pill key={s} href={href({ status: status === s ? null : s })} active={status === s}>
+              {ORDER_STATUS_LABELS[s]}
+            </Pill>
+          ))}
+        </div>
+      )}
 
       <div className="mt-8">
         {orders.length === 0 ? (

@@ -7,8 +7,16 @@ import { BAKERY_INFO, whatsappLink } from "@/lib/bakery-info";
 import { formatRwf } from "@/lib/currency";
 import { ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/enums";
 import { formatDate, formatDateTime } from "@/lib/format";
+import { IS_DEMO } from "@/lib/demo";
 import { orderWhatsAppMessage, zoneLabel } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
+
+// Demo build pre-renders a page per seeded order (see prisma/seed-demo.ts).
+export async function generateStaticParams() {
+  if (!IS_DEMO) return [];
+  const orders = await prisma.order.findMany({ select: { id: true } });
+  return orders.map((o) => ({ id: o.id }));
+}
 
 export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -35,7 +43,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
             {ORDER_STATUS_LABELS[order.status as OrderStatus] ?? order.status}
           </Badge>
           <StatusSelect
-            action={updateOrderStatus}
+            action={IS_DEMO ? undefined : updateOrderStatus}
             idName="orderId"
             idValue={order.id}
             current={order.status}

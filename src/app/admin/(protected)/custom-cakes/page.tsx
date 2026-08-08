@@ -3,6 +3,7 @@ import { StatusSelect } from "@/components/admin/StatusSelect";
 import { Badge, Card, EmptyState } from "@/components/ui";
 import { whatsappLink } from "@/lib/bakery-info";
 import { formatRwf } from "@/lib/currency";
+import { IS_DEMO } from "@/lib/demo";
 import { REQUEST_STATUSES, REQUEST_STATUS_LABELS, type RequestStatus } from "@/lib/enums";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -39,7 +40,7 @@ export default async function AdminCustomCakesPage() {
                     {REQUEST_STATUS_LABELS[request.status as RequestStatus] ?? request.status}
                   </Badge>
                   <StatusSelect
-                    action={updateRequestStatus}
+                    action={IS_DEMO ? undefined : updateRequestStatus}
                     idName="requestId"
                     idValue={request.id}
                     current={request.status}

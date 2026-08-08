@@ -1,5 +1,6 @@
 import { toggleMessageRead } from "@/app/admin/actions";
 import { Badge, Card, EmptyState } from "@/components/ui";
+import { IS_DEMO } from "@/lib/demo";
 import { formatDateTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -43,15 +44,26 @@ export default async function AdminMessagesPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   {!message.isRead && <Badge tone="wine">Unread</Badge>}
-                  <form action={toggleMessageRead}>
-                    <input type="hidden" name="messageId" value={message.id} />
+                  {IS_DEMO ? (
                     <button
-                      type="submit"
-                      className="rounded-full border border-ink-900/15 px-4 py-2 text-xs font-medium text-ink-700 transition-colors hover:border-accent/40 hover:text-accent"
+                      type="button"
+                      disabled
+                      title="Read-only in this preview"
+                      className="rounded-full border border-ink-900/15 px-4 py-2 text-xs font-medium text-ink-700 opacity-50"
                     >
                       Mark as {message.isRead ? "unread" : "read"}
                     </button>
-                  </form>
+                  ) : (
+                    <form action={toggleMessageRead}>
+                      <input type="hidden" name="messageId" value={message.id} />
+                      <button
+                        type="submit"
+                        className="rounded-full border border-ink-900/15 px-4 py-2 text-xs font-medium text-ink-700 transition-colors hover:border-accent/40 hover:text-accent"
+                      >
+                        Mark as {message.isRead ? "unread" : "read"}
+                      </button>
+                    </form>
+                  )}
                 </div>
               </div>
 

@@ -1,39 +1,27 @@
 import { prisma } from "@/lib/prisma";
+import type { ProductSort } from "@/lib/product-format";
 import type { Prisma } from "@prisma/client";
 
 export type ProductWithRelations = Prisma.ProductGetPayload<{
   include: { category: true; variants: true };
 }>;
 
-/** `imageUrls` is a comma-separated column; first entry is the card image. */
-export function productImages(imageUrls: string) {
-  const list = imageUrls.split(",").map((s) => s.trim()).filter(Boolean);
-  return list.length ? list : ["/images/products/placeholder.jpg"];
-}
-
-export function primaryImage(imageUrls: string) {
-  return productImages(imageUrls)[0];
-}
-
-export function allergenList(allergens: string) {
-  return allergens.split(",").map((s) => s.trim()).filter(Boolean);
-}
+// The pure helpers live in product-format.ts so client components can import
+// them without pulling Prisma in; re-exported here so callers see one module.
+export {
+  productImages,
+  primaryImage,
+  allergenList,
+  PRODUCT_SORTS,
+  SORT_LABELS,
+  type ProductSort,
+} from "@/lib/product-format";
 
 /** Lowest price a product can be bought at — variants can undercut the base. */
 export function startingPriceRwf(product: ProductWithRelations) {
   if (!product.variants.length) return product.priceRwf;
   return Math.min(product.priceRwf, ...product.variants.map((v) => v.priceRwf));
 }
-
-export const PRODUCT_SORTS = ["featured", "price-asc", "price-desc", "name"] as const;
-export type ProductSort = (typeof PRODUCT_SORTS)[number];
-
-export const SORT_LABELS: Record<ProductSort, string> = {
-  featured: "Featured first",
-  "price-asc": "Price: low to high",
-  "price-desc": "Price: high to low",
-  name: "Name A–Z",
-};
 
 export function getCategories() {
   return prisma.category.findMany({

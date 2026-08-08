@@ -1,7 +1,44 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+/**
+ * Two builds come out of this repo.
+ *
+ * Normal (`npm run build`) — the real app: server-rendered, Server Actions,
+ * Prisma, staff auth. This is what gets deployed to a Node host.
+ *
+ * Demo (`DEMO_EXPORT=1 npm run build`) — a fully static click-through of the
+ * same UI for GitHub Pages, so the client can browse it without a server.
+ * Pages cannot run server code, so the demo build swaps the Server Actions and
+ * cookie reads for client-side stand-ins. Ordering does not really happen
+ * there; see README.
+ */
+const isDemoExport = process.env.DEMO_EXPORT === "1";
+
+const nextConfig: NextConfig = isDemoExport
+  ? {
+      output: "export",
+      // Readable from client components too, so forms know to fake it.
+      env: { NEXT_PUBLIC_DEMO: "1" },
+      // Project pages are served from /<repo>, not the domain root.
+      basePath: "/sweet-crust",
+      // Pages has no image optimizer. A custom loader rather than
+      // `unoptimized` because unoptimized images skip basePath entirely and
+      // every photo 404s — the loader adds the prefix. See the loader file.
+      images: { loader: "custom", loaderFile: "./src/demo/image-loader.ts" },
+      // Emit `about/index.html` so paths resolve without a rewrite engine.
+      trailingSlash: true,
+      // Static export cannot contain a Server Action — even an unused import
+      // fails the build. Resolve those four modules to client-safe stubs so
+      // the components importing them need no changes at all.
+      turbopack: {
+        resolveAlias: {
+          "@/app/(site)/actions": "./src/demo/site-actions.ts",
+          "@/app/(site)/cart/actions": "./src/demo/cart-actions.ts",
+          "@/app/admin/actions": "./src/demo/admin-actions.ts",
+          "@/app/admin/products/actions": "./src/demo/product-actions.ts",
+        },
+      },
+    }
+  : {};
 
 export default nextConfig;
