@@ -19,7 +19,7 @@ import {
 export const metadata: Metadata = {
   title: "Patisserie Menu",
   description:
-    "Browse the full Sweet Crust patisserie — slow-fermented breads, celebration cakes and hand-laminated pastries, with prices in RWF or USD. Order online for pickup or delivery in Kigali.",
+    "Browse the full Sweet Crust menu — croissants, pies, cookies, celebration cakes and assorted boxes, with prices in RWF or USD. Order online for pickup or delivery in Kigali.",
 };
 
 export default async function PatisseriesPage({
@@ -65,7 +65,7 @@ export default async function PatisseriesPage({
             subtitle={
               activeCategory
                 ? activeCategory.description
-                : "Everything we bake, in one place. Breads are on the shelf today; cakes are made to order, so check the notice period before you plan around one."
+                : "Everything we bake, in one place. Pastries are on the shelf today; celebration cakes are made to order, so check the notice period before you plan around one."
             }
           />
         </Container>
@@ -149,7 +149,7 @@ async function DemoPatisseries() {
             tone="dark"
             eyebrow="The counter"
             title="Patisserie Menu"
-            subtitle="Everything we bake, in one place. Breads are on the shelf today; cakes are made to order, so check the notice period before you plan around one."
+            subtitle="Everything we bake, in one place. Pastries are on the shelf today; celebration cakes are made to order, so check the notice period before you plan around one."
           />
         </Container>
       </section>

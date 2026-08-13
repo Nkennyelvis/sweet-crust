@@ -11,16 +11,16 @@ const OWNER_PASSWORD = process.env.SEED_OWNER_PASSWORD ?? "sweetcrust123";
 
 /** Product photos worth showing in the gallery alongside the atmosphere shots. */
 const GALLERY_FROM_PRODUCTS: { slug: string; caption: string; tag: string }[] = [
-  { slug: "sourdough-boule", caption: "Sourdough, thirty-six hours in the making", tag: "breads" },
-  { slug: "french-baguette", caption: "Baguettes, baked three times a day", tag: "breads" },
-  { slug: "dark-rye-loaf", caption: "Dark rye, malted and molassed", tag: "breads" },
+  { slug: "butter-croissant", caption: "Laminated over three days", tag: "pastries" },
+  { slug: "cinnamon-roll", caption: "Our signature cinnamon roll", tag: "pastries" },
+  { slug: "pain-au-chocolat", caption: "Two batons of dark chocolate", tag: "pastries" },
+  { slug: "chicken-pie", caption: "Chicken pies, out at eleven", tag: "pastries" },
+  { slug: "chocolate-chip-cookie", caption: "Chunks, never chips", tag: "pastries" },
   { slug: "wedding-cake", caption: "A wedding cake we were trusted with", tag: "cakes" },
   { slug: "red-velvet-cake", caption: "Red velvet, cut to order", tag: "cakes" },
-  { slug: "chocolate-mousse-cake", caption: "Mirror-glazed chocolate mousse", tag: "cakes" },
-  { slug: "tropical-fruit-cake", caption: "Whatever the market gave us this morning", tag: "cakes" },
-  { slug: "butter-croissant", caption: "Twenty-seven layers of butter", tag: "pastries" },
-  { slug: "custard-tart", caption: "Blistered custard tarts, eaten warm", tag: "pastries" },
-  { slug: "mille-feuille", caption: "Mille-feuille, feathered by hand", tag: "pastries" },
+  { slug: "drip-cake", caption: "Ganache poured warm over a chilled cake", tag: "cakes" },
+  { slug: "luxury-floral-cake", caption: "Flowers arranged the morning it goes out", tag: "cakes" },
+  { slug: "classic-birthday-cake", caption: "Piped by hand, name and all", tag: "cakes" },
 ];
 
 async function main() {
@@ -101,6 +101,35 @@ async function main() {
     }
   }
   console.log(`  categories: ${CATALOG.length}, products: ${productCount}`);
+
+  // catalog.ts is the source of truth: anything not in it is removed, or the
+  // fictional pre-launch range lingers alongside the client's real menu.
+  // Order history survives — OrderItem keeps a name/price snapshot and its
+  // productId is set to null (see the schema's onDelete: SetNull).
+  //
+  // ⚠️ This means re-seeding DELETES products added through /admin/products.
+  // Add them to catalog.ts as well if they should be permanent.
+  const catalogSlugs = CATALOG.flatMap((c) => c.products.map((p) => p.slug));
+  const stale = await prisma.product.findMany({
+    where: { slug: { notIn: catalogSlugs } },
+    select: { id: true, name: true },
+  });
+  if (stale.length) {
+    await prisma.productVariant.deleteMany({ where: { productId: { in: stale.map((p) => p.id) } } });
+    await prisma.product.deleteMany({ where: { id: { in: stale.map((p) => p.id) } } });
+    console.log(`  removed ${stale.length} products not in the catalogue: ${stale.map((p) => p.name).join(", ")}`);
+  }
+
+  // Same for categories, once their products are gone.
+  const catalogCategorySlugs = CATALOG.map((c) => c.slug);
+  const staleCategories = await prisma.category.findMany({
+    where: { slug: { notIn: catalogCategorySlugs }, products: { none: {} } },
+    select: { id: true, name: true },
+  });
+  if (staleCategories.length) {
+    await prisma.category.deleteMany({ where: { id: { in: staleCategories.map((c) => c.id) } } });
+    console.log(`  removed ${staleCategories.length} empty categories: ${staleCategories.map((c) => c.name).join(", ")}`);
+  }
 
   // Gallery ----------------------------------------------------------------
   const galleryRows = [

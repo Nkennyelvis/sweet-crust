@@ -4,9 +4,9 @@ import { Container } from "@/components/ui";
 import { BAKERY_INFO, OPENING_HOURS } from "@/lib/bakery-info";
 
 const SHOP_LINKS = [
-  { href: "/patisseries?category=breads", label: "Breads" },
-  { href: "/patisseries?category=cakes", label: "Cakes" },
   { href: "/patisseries?category=pastries", label: "Pastries" },
+  { href: "/patisseries?category=cakes", label: "Celebration Cakes" },
+  { href: "/patisseries?category=boxes", label: "Boxes & Combos" },
   { href: "/custom-cakes", label: "Custom Cakes" },
 ];
 
@@ -24,7 +24,7 @@ export function Footer() {
         <div>
           <BrandLockup tone="dark" showTagline />
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-paper-200/80">
-            Handcrafted breads, cakes and pastries baked fresh every morning in Kigali.
+            Croissants, pies, cookies and celebration cakes, baked fresh every morning in Kigali.
           </p>
           <div className="mt-5 flex gap-3">
             <SocialLink href={BAKERY_INFO.instagram} label="Instagram">

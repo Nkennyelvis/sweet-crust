@@ -155,7 +155,7 @@ export function ProductForm({
           </div>
           <div>
             <Label htmlFor="unit">Unit</Label>
-            <Input id="unit" placeholder="per loaf" {...field("unit")} />
+            <Input id="unit" placeholder="each" {...field("unit")} />
             <FieldError>{state.errors?.unit}</FieldError>
           </div>
           <div>

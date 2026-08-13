@@ -28,7 +28,7 @@ const FAQS = [
   },
   {
     q: "How far ahead should I order?",
-    a: "Breads and pastries are on the shelf daily — order the same morning. Cakes need one to two days, and wedding cakes at least two weeks.",
+    a: "Pastries are on the shelf daily — order the same morning. Assorted boxes need half a day, celebration cakes two to three days, and wedding cakes at least two weeks.",
   },
   {
     q: "Can I order for an office or event?",

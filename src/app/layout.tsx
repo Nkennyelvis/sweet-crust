@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s · Sweet Crust",
   },
   description:
-    "Sweet Crust is a Kigali bakery and patisserie handcrafting fresh breads, celebration cakes and pastries daily. Order online for pickup or delivery across Kigali.",
+    "Sweet Crust is a Kigali bakery and patisserie baking fresh croissants, pies, cookies and celebration cakes daily. Order online for pickup or delivery across Kigali.",
   openGraph: {
     type: "website",
     siteName: "Sweet Crust",

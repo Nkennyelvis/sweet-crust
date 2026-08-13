@@ -47,6 +47,7 @@ Staff sign in at `/admin/login`. The seeded development account is
 | `npx tsx prisma/seed.ts` | Re-seed the catalogue (safe to re-run — upserts by slug) |
 | `npx tsx scripts/fetch-photos.ts` | Re-download any missing placeholder photos |
 | `npx tsx scripts/contact-sheet.ts` | Build `public/_contact-sheet-N.html` to eyeball all photos at once |
+| `npx tsx scripts/verify-images.ts` | Check every image the database references still exists |
 | `npx tsx scripts/reset-demo-data.ts` | Wipe orders/enquiries after a demo, keeping the catalogue |
 
 ---
@@ -140,9 +141,13 @@ Each item says exactly where it lives.
       and social links are still invented.
 - [ ] **Opening hours and delivery zones** — same file. Confirm the zones and fees match
       what the bakery actually charges.
-- [ ] **Menu and prices** — `prisma/catalog.ts` holds 42 realistic but invented products.
-      Either edit that file and re-seed, or (easier for the client) edit products directly
-      in `/admin/products`.
+- [x] **Menu and prices** — `prisma/catalog.ts` now holds the client's **real** menu: 15
+      pastries, 9 celebration cakes and 5 boxes, at the recommended retail prices from
+      `IRIE_VIANDS_Pastry_and_Celebration_Cake_Menu.pdf`. Cake sizes and wedding tiers are
+      in as variants; flavours and wedding styles are in `src/lib/cake-options.ts`.
+      ⚠️ That file is the source of truth — **re-seeding deletes products added through
+      `/admin/products`**, so add anything permanent to the catalogue too.
+- [ ] **Product descriptions** — written to fit the range but not client-approved.
 - [ ] **Testimonials** — the three quotes on the home page are written, not real. They are in
       the `TESTIMONIALS` array in `src/app/(site)/page.tsx`.
 - [ ] **Exchange rate** — `RWF_PER_USD` in `src/lib/currency.ts`.

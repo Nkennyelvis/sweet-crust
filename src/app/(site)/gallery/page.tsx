@@ -6,7 +6,7 @@ import { getGalleryImages } from "@/lib/products";
 export const metadata: Metadata = {
   title: "Gallery",
   description:
-    "Inside the Sweet Crust bakery in Kigali — the counter at opening, celebration cakes finished by hand, and bread straight off the deck oven.",
+    "Inside the Sweet Crust bakery in Kigali — the counter at opening, celebration cakes finished by hand, and pastries straight out of the oven.",
 };
 
 export default async function GalleryPage() {

@@ -18,7 +18,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "The sourdough is the only bread my husband will eat now. We drive across town on Saturdays for it and we are not sorry.",
+      "The cinnamon rolls are the only thing my husband will eat for breakfast now. We drive across town on Saturdays for them and we are not sorry.",
     name: "Grace U.",
     detail: "Weekly regular",
   },
@@ -80,8 +80,8 @@ export default async function HomePage() {
             SWEET CRUST
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-paper-200 sm:text-lg">
-            A Kigali bakery and patisserie. Slow-fermented breads, celebration cakes finished by hand,
-            and viennoiserie laminated over three days.
+            A Kigali bakery and patisserie. Croissants and pies baked fresh each morning,
+            celebration cakes finished by hand, and boxes made up for the office.
           </p>
           {/* One CTA, not two. The brief asked for "Order Now" and "Patisserie
               Menu" side by side, but both land on /patisseries — two buttons to
@@ -181,7 +181,7 @@ export default async function HomePage() {
             <SectionHeading
               eyebrow="Our story"
               title="A heart of bakery in Africa"
-              subtitle="Sweet Crust began with one deck oven, one sourdough starter and a stubborn belief that Kigali deserved bread worth queueing for."
+              subtitle="Sweet Crust began with one oven and a stubborn belief that Kigali deserved pastry worth queueing for — generous, properly made, and priced so you can come back tomorrow."
             />
             <p className="mt-5 text-base leading-relaxed text-ink-700">
               We still feed that same starter every morning. We still laminate croissants over three days
@@ -190,7 +190,7 @@ export default async function HomePage() {
               their money back.
             </p>
             <p className="mt-4 text-base leading-relaxed text-ink-700">
-              Come in early. That is when the counter is fullest and the bread is still warm.
+              Come in early. That is when the counter is fullest and the croissants are still warm.
             </p>
             <div className="mt-8">
               <LinkButton href="/contact" variant="outline">

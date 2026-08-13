@@ -3,6 +3,7 @@ import Image from "next/image";
 import { CustomCakeForm } from "@/components/forms/CustomCakeForm";
 import { Container, GoldRule, SectionHeading } from "@/components/ui";
 import { formatRwf } from "@/lib/currency";
+import { CAKE_FLAVOURS, WEDDING_STYLES } from "@/lib/cake-options";
 
 export const metadata: Metadata = {
   title: "Custom Cakes",
@@ -32,11 +33,11 @@ const STEPS = [
 const FAQS = [
   {
     q: "How much notice do you need?",
-    a: "Two days for a decorated celebration cake, and at least two weeks for a tiered wedding cake. If your date is sooner than that, ask anyway — sometimes we can move things around.",
+    a: "Two days for a decorated celebration cake, three for photo, character or floral designs, and at least two weeks for a tiered wedding cake. If your date is sooner than that, ask anyway — sometimes we can move things around.",
   },
   {
     q: "What does a custom cake cost?",
-    a: `Decorated celebration cakes start around ${formatRwf(24000)} for a 6 inch. Tiered wedding cakes start around ${formatRwf(130000)} for two tiers. The final price depends on size, decoration and how much handwork the design needs.`,
+    a: `Classic birthday cakes start at ${formatRwf(25000)} for a 6 inch serving 8–10, and ${formatRwf(40000)} for an 8 inch serving 15–20. Premium designs — drip, photo, character and floral — run from ${formatRwf(50000)} to ${formatRwf(75000)}. Tiered wedding cakes start at ${formatRwf(100000)} for one tier. The final price depends on size, decoration and how much handwork the design needs.`,
   },
   {
     q: "Can you copy a cake I saw online?",
@@ -47,6 +48,19 @@ const FAQS = [
     a: "We can adapt many recipes, but everything is baked in one kitchen handling gluten, dairy, eggs, nuts and sesame, so we cannot promise a trace-free cake. Tell us about the allergy and we will be honest about the risk.",
   },
 ];
+
+function FlavourList({ title, flavours }: { title: string; flavours: string[] }) {
+  return (
+    <div>
+      <h3 className="font-display text-xl text-gold-300">{title}</h3>
+      <ul className="mt-3 space-y-1.5 text-sm text-paper-200">
+        {flavours.map((f) => (
+          <li key={f}>{f}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export default function CustomCakesPage() {
   return (
@@ -86,6 +100,36 @@ export default function CustomCakesPage() {
               </li>
             ))}
           </ol>
+        </Container>
+      </section>
+
+      {/* Flavours and wedding styles come straight from the client's menu. */}
+      <section className="bg-wine-950 py-20 text-paper-50">
+        <Container>
+          <SectionHeading align="center" tone="dark" eyebrow="Choose a flavour" title="Our flavour menu" />
+          <div className="mx-auto mt-12 grid max-w-4xl gap-8 sm:grid-cols-3">
+            <FlavourList title="Classic" flavours={CAKE_FLAVOURS.classic} />
+            <FlavourList title="Premium" flavours={CAKE_FLAVOURS.premium} />
+            <FlavourList title="Wedding favourites" flavours={CAKE_FLAVOURS.wedding} />
+          </div>
+
+          <GoldRule className="my-14" />
+
+          <SectionHeading align="center" tone="dark" eyebrow="Weddings" title="Starting prices by style" />
+          <dl className="mx-auto mt-10 max-w-2xl divide-y divide-paper-50/10">
+            {WEDDING_STYLES.map((s) => (
+              <div key={s.style} className="flex items-center justify-between gap-6 py-3.5">
+                <dt className="text-sm text-paper-200">{s.style}</dt>
+                <dd className="whitespace-nowrap font-display text-lg text-gold-300">
+                  from {formatRwf(s.fromRwf)}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mx-auto mt-6 max-w-2xl text-center text-xs leading-relaxed text-paper-200/70">
+            Starting prices for Kigali. The final quote depends on size, flavour and how much handwork the
+            design needs — we will confirm it before anything is agreed.
+          </p>
         </Container>
       </section>
 

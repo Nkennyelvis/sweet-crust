@@ -9,7 +9,6 @@ export type GalleryItem = { id: string; imageUrl: string; caption: string; tag: 
 
 const TAG_LABELS: Record<string, string> = {
   bakery: "The bakery",
-  breads: "Breads",
   cakes: "Cakes",
   pastries: "Pastries",
 };

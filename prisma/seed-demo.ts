@@ -68,8 +68,9 @@ async function main() {
       notes: 'Please pipe "Happy Birthday Keza" on the cake.',
       status: "CONFIRMED",
       lines: [
-        { slug: "red-velvet-cake", quantity: 1, variantIndex: 1 },
-        { slug: "butter-croissant", quantity: 2 },
+        { slug: "classic-birthday-cake", quantity: 1, variantIndex: 1 },
+        { slug: "butter-croissant", quantity: 4 },
+        { slug: "chocolate-chip-cookie", quantity: 4 },
       ],
     },
     {
@@ -86,9 +87,8 @@ async function main() {
       notes: "Office launch — please deliver warm if you can.",
       status: "BAKING",
       lines: [
-        { slug: "butter-croissant", quantity: 24 },
+        { slug: "office-box", quantity: 4 },
         { slug: "pain-au-chocolat", quantity: 12 },
-        { slug: "almond-croissant", quantity: 12 },
       ],
     },
     {
@@ -105,8 +105,8 @@ async function main() {
       notes: null,
       status: "PENDING",
       lines: [
-        { slug: "sourdough-boule", quantity: 2 },
-        { slug: "dark-rye-loaf", quantity: 1 },
+        { slug: "cinnamon-roll", quantity: 6 },
+        { slug: "chicken-pie", quantity: 4 },
       ],
     },
     {

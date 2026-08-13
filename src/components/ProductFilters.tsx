@@ -53,7 +53,7 @@ export function ProductFilters({ resultCount }: { resultCount: number }) {
             // pill or Back resets the box without an effect syncing state.
             key={query}
             defaultValue={query}
-            placeholder="Search sourdough, éclair, red velvet…"
+            placeholder="Search croissant, chicken pie, red velvet…"
             className="w-full rounded-full border border-ink-900/15 bg-surface py-2.5 pl-9 pr-4 text-sm text-ink-900 outline-none transition-colors placeholder:text-ink-700/50 focus:border-accent focus:ring-1 focus:ring-accent"
           />
         </div>

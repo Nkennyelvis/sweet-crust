@@ -52,7 +52,7 @@ export default async function OpenGraphImage() {
         <div style={{ display: "flex", marginTop: 12, fontSize: 96, letterSpacing: 14 }}>SWEET CRUST</div>
 
         <div style={{ display: "flex", marginTop: 26, fontSize: 28, color: "#ebdfcd" }}>
-          Breads · Cakes · Patisserie — Kigali, Rwanda
+          Pastries · Celebration Cakes · Boxes — Kigali, Rwanda
         </div>
       </div>
     ),

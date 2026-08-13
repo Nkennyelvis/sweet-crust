@@ -5,6 +5,7 @@ import { submitCustomCakeRequest } from "@/app/(site)/actions";
 import { useFormFields } from "@/components/forms/useFormFields";
 import { Button, FieldError, Input, Label, Select, Textarea } from "@/components/ui";
 import { EMPTY_STATE } from "@/lib/validation";
+import { ALL_FLAVOURS } from "@/lib/cake-options";
 import { whatsappLink } from "@/lib/bakery-info";
 
 const OCCASIONS = [
@@ -115,7 +116,19 @@ export function CustomCakeForm() {
 
       <div>
         <Label htmlFor="cake-flavour">Flavour ideas (optional)</Label>
-        <Input id="cake-flavour" placeholder="Red velvet, vanilla, chocolate fudge…" {...field("flavour")} />
+        <Input
+          id="cake-flavour"
+          list="cake-flavour-options"
+          placeholder="Red velvet, vanilla, chocolate fudge…"
+          {...field("flavour")}
+        />
+        {/* Suggests the real flavour menu without blocking a request for
+            something off-list. */}
+        <datalist id="cake-flavour-options">
+          {ALL_FLAVOURS.map((f) => (
+            <option key={f} value={f} />
+          ))}
+        </datalist>
         <FieldError>{state.errors?.flavour}</FieldError>
       </div>
 
