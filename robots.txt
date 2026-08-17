@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Disallow: /admin
+Disallow: /cart
+Disallow: /order/
+
+Sitemap: https://sweetcrust.rw/sitemap.xml
