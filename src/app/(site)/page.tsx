@@ -79,9 +79,10 @@ export default async function HomePage() {
           <h1 className="mt-3 font-display text-5xl font-semibold tracking-[0.12em] text-paper-50 sm:text-7xl">
             SWEET CRUST
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-paper-200 sm:text-lg">
-            A Kigali bakery and patisserie. Croissants and pies baked fresh each morning,
-            celebration cakes finished by hand, and boxes made up for the office.
+          {/* Client asked for far fewer words under the name — one short line,
+              not a paragraph. The detail lives further down the page. */}
+          <p className="mt-5 text-base text-paper-200 sm:text-lg">
+            Pastries and celebration cakes, baked fresh in Kigali.
           </p>
           {/* One CTA, not two. The brief asked for "Order Now" and "Patisserie
               Menu" side by side, but both land on /patisseries — two buttons to

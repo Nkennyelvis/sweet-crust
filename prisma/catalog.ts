@@ -221,6 +221,36 @@ export const CATALOG: SeedCategory[] = [
         photoQuery: "mini pizza",
       },
       {
+        // ⚠️ PRICE NOT SUPPLIED — the client asked for samosas but sent no
+        // price. 1,000 RWF is a normal Kigali counter price and sits just
+        // under the doughnut, the cheapest item they did price. Confirm this.
+        slug: "samosa",
+        name: "Samosa",
+        description: "Spiced filling in a thin, blistered pastry triangle.",
+        longDescription:
+          "Folded by hand and fried to order, with a thin pastry that blisters rather than goes heavy. Spiced beef or vegetable depending on the day — ask at the counter which is out.",
+        priceRwf: 1000,
+        unit: "each",
+        allergens: "Gluten",
+        photoQuery: "samosa",
+      },
+      {
+        // ⚠️ PRICE NOT SUPPLIED — see the note on the samosa above.
+        slug: "chapatti",
+        name: "Chapatti",
+        description: "Soft, layered and griddled fresh through the morning.",
+        longDescription:
+          "Rolled thin, oiled and folded so it cooks in soft layers, then griddled fresh through the morning. Good on its own, better wrapped around whatever you are having.",
+        priceRwf: 1000,
+        unit: "each",
+        allergens: "Gluten",
+        // The committed photo was chosen by hand with `--pick=5`: every
+        // top-ranked result for this term is a curry dish with chapati on the
+        // side, which reads wrong on a product card. Re-run with `--force` and
+        // it will regress — check the image if you do.
+        photoQuery: "chapati bread",
+      },
+      {
         slug: "palmier",
         name: "Palmier",
         description: "Caramelised puff pastry hearts, crisp all the way through.",

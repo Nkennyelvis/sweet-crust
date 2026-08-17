@@ -37,6 +37,7 @@ Regenerate with `npx tsx scripts/fetch-photos.ts`.
 | `products/brioche-loaf.jpg` | Iggy's Slider Brioche Buns | snowpea&bokchoi | CC BY 2.0 | [Openverse](https://www.flickr.com/photos/28531775@N06/4478942024) |
 | `products/butter-croissant.jpg` | Croissants | rainydayknitter | CC BY-ND 2.0 | [Openverse](https://www.flickr.com/photos/10181902@N00/4545612957) |
 | `products/carrot-walnut-cake.jpg` | Carrot & Walnut Cake with Cream Cheese Icing | MBC Foods | CC BY 2.0 | [Openverse](https://www.flickr.com/photos/87692493@N08/45980651644) |
+| `products/chapatti.jpg` | Chapati | Ruth and Dave | CC BY 2.0 | [Openverse](https://www.flickr.com/photos/95142644@N00/493953074) |
 | `products/chicken-pie.jpg` | Cornish Pasty 2 | Hammer51012 | CC BY-SA 2.0 | [Openverse](https://www.flickr.com/photos/7365168@N03/3342664528) |
 | `products/chocolate-chip-cookie.jpg` | healthy chocolate chip cookies | hlkljgk | CC BY-SA 2.0 | [Openverse](https://www.flickr.com/photos/52473526@N00/3343913005) |
 | `products/chocolate-eclair.jpg` | Banana Éclair from Café Selmarie | vxla | CC BY 2.0 | [Openverse](https://www.flickr.com/photos/14812197@N00/5028911806) |
@@ -77,6 +78,7 @@ Regenerate with `npx tsx scripts/fetch-photos.ts`.
 | `products/red-velvet-cake.jpg` | Red Velvet Cake | kimberlykv | CC BY 2.0 | [Openverse](https://www.flickr.com/photos/87542849@N00/3597535876) |
 | `products/red-velvet-cupcakes.jpg` | Starbucks Red Velvet Cupcake | Mr.TinDC | CC BY-ND 2.0 | [Openverse](https://www.flickr.com/photos/7471115@N08/4355454422) |
 | `products/rosemary-focaccia.jpg` | Giant bread pillow | treehouse1977 | CC BY-SA 2.0 | [Openverse](https://www.flickr.com/photos/13071852@N00/5894369347) |
+| `products/samosa.jpg` | Samosa | kkalyan | CC BY-SA 2.0 | [Openverse](https://www.flickr.com/photos/35581095@N00/3048032066) |
 | `products/sausage-roll.jpg` | Sausage Roll - Le Croissant de Halles AUD2.80 | avlxyz | CC BY-SA 2.0 | [Openverse](https://www.flickr.com/photos/10559879@N00/4623046462) |
 | `products/sesame-bagels.jpg` | stack of everything bagels [it's the salt, stupid] | woodleywonderworks | CC BY 2.0 | [Openverse](https://www.flickr.com/photos/73645804@N00/5361206960) |
 | `products/sourdough-boule.jpg` | Sourdough Boule | goblinbox_(queen_of_ad_hoc_bento) | CC BY 2.0 | [Openverse](https://www.flickr.com/photos/25977089@N00/26788460265) |
