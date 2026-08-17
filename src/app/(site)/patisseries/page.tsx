@@ -97,13 +97,16 @@ export default async function PatisseriesPage({
                 title="Nothing matched that"
                 body={
                   params.q
-                    ? `We could not find anything for “${params.q}”. Try a broader word, or browse a category.`
+                    ? `We could not find anything for “${params.q}”. Try a broader word, browse a category, or reserve it for another day and we will make it for you.`
                     : "This category is empty at the moment."
                 }
                 action={
-                  <LinkButton href="/patisseries" variant="outline">
-                    Show everything
-                  </LinkButton>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    <LinkButton href="/patisseries" variant="outline">
+                      Show everything
+                    </LinkButton>
+                    <LinkButton href="/reserve">Reserve an item</LinkButton>
+                  </div>
                 }
               />
             ) : (

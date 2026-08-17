@@ -68,18 +68,25 @@ Staff sign in at `/admin/login`. The seeded development account is
   fees, date and time window, then a saved order.
 - **Order confirmation** (`/order/[orderNumber]`) — a receipt plus a WhatsApp button that
   opens a pre-written message summarising the order.
+- **Reserve** (`/reserve`) — for when someone comes looking and it has gone. A sold-out
+  product's button reads **"Sold out — reserve it"** and lands here with the item
+  preselected; the empty-search state offers it too. The customer picks a size, quantity
+  and a future day, and the bakery confirms on WhatsApp. Nothing is charged to reserve.
 - **Custom Cakes** (`/custom-cakes`) — how it works, pricing guidance, FAQ and an enquiry form.
 - **Gallery** (`/gallery`) — filterable grid with a keyboard-navigable lightbox.
 - **Contact** (`/contact`) — address, hours, delivery zones, map, contact form and FAQs.
 
 **Admin** (`/admin`)
 
-Dashboard (orders due today, open orders, month revenue, things needing a reply),
-orders list with filters, order detail with a status dropdown, product create/edit with
-sizes and stock toggles, plus custom-cake and message inboxes.
+Dashboard (orders due today, open orders, open reservations, month revenue, things needing
+a reply), orders list with filters, order detail with a status dropdown, a reservations
+inbox, product create/edit with sizes and stock toggles, plus custom-cake and message
+inboxes.
 
 Order statuses run `Pending → Confirmed → In the oven → Ready → Out for delivery →
-Completed`, with `Cancelled` available at any point.
+Completed`, with `Cancelled` available at any point. Reservations run
+`New → Confirmed → Ready to collect → Collected`, also with `Cancelled`; open ones sort
+soonest-first and anything past its date is flagged, so a promise does not quietly lapse.
 
 ---
 
@@ -189,6 +196,7 @@ reach a database. So the preview build swaps those for stand-ins:
 | Live site | Static preview |
 | --- | --- |
 | Checkout saves an order | Shows a sample confirmation; nothing is stored |
+| Reservations save | Show a sample reference; nothing is stored |
 | Contact / custom-cake forms save | Show their success state only |
 | Staff login checks a password | Any details get you in |
 | Admin status toggles update the database | Rendered read-only |

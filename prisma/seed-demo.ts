@@ -31,6 +31,12 @@ async function main() {
     return product;
   };
 
+  // Mark one item sold out so the walkthrough actually shows the "sold out —
+  // reserve it" path the client asked for. Which items are out is a day-to-day
+  // call the bakery makes in the admin, so this belongs to the demo only.
+  await prisma.product.updateMany({ data: { isSoldOut: false } });
+  await prisma.product.update({ where: { slug: "glazed-doughnut" }, data: { isSoldOut: true } });
+
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.customCakeRequest.deleteMany();
@@ -164,6 +170,69 @@ async function main() {
     });
   }
 
+  // Reservations — one due today, one ahead, one already collected, so the
+  // walkthrough shows the whole lifecycle.
+  const reservationSeeds = [
+    {
+      reference: "RS-DEMO01",
+      customerName: "Chantal Mukamana",
+      customerPhone: "0788 444 909",
+      customerEmail: "chantal@example.rw",
+      slug: "glazed-doughnut",
+      quantity: 12,
+      requestedDate: dayUtc(0),
+      timeWindow: "08:00 — 10:00",
+      notes: "They were gone by the time I arrived on Saturday — saving these for my daughter's class.",
+      status: "CONFIRMED",
+    },
+    {
+      reference: "RS-DEMO02",
+      customerName: "Eric Habimana",
+      customerPhone: "0788 321 654",
+      customerEmail: null,
+      slug: "cinnamon-roll",
+      quantity: 6,
+      requestedDate: dayUtc(3),
+      timeWindow: "16:00 — 18:00",
+      notes: null,
+      status: "NEW",
+    },
+    {
+      reference: "RS-DEMO03",
+      customerName: "Diane K.",
+      customerPhone: "0788 555 010",
+      customerEmail: null,
+      slug: "samosa",
+      quantity: 20,
+      requestedDate: dayUtc(-2),
+      timeWindow: "12:00 — 14:00",
+      notes: "For a small office lunch.",
+      status: "COLLECTED",
+    },
+  ];
+
+  await prisma.reservation.deleteMany();
+  for (const r of reservationSeeds) {
+    const product = pick(r.slug);
+    await prisma.reservation.create({
+      data: {
+        reference: r.reference,
+        customerName: r.customerName,
+        customerPhone: r.customerPhone,
+        customerEmail: r.customerEmail,
+        productId: product.id,
+        productNameSnapshot: product.name,
+        variantName: null,
+        quantity: r.quantity,
+        priceRwfAtRequest: product.priceRwf,
+        requestedDate: r.requestedDate,
+        timeWindow: r.timeWindow,
+        notes: r.notes,
+        status: r.status,
+      },
+    });
+  }
+
   await prisma.customCakeRequest.createMany({
     data: [
       {
@@ -218,7 +287,7 @@ async function main() {
   });
 
   console.log(
-    `Demo data: ${orders.length} orders, 2 custom cake requests, 2 messages.`,
+    `Demo data: ${orders.length} orders, ${reservationSeeds.length} reservations, 2 custom cake requests, 2 messages.`,
   );
 }
 

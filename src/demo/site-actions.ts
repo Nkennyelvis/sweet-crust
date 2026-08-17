@@ -23,6 +23,15 @@ export async function submitContactMessage(): Promise<ActionState> {
   };
 }
 
+export async function submitReservation(): Promise<ActionState> {
+  await pause();
+  return {
+    ok: true,
+    message:
+      "Reserved — your reference is RS-DEMO01. We will confirm on WhatsApp that it will be ready for you. (Preview build: nothing was actually saved.)",
+  };
+}
+
 export async function submitCustomCakeRequest(): Promise<ActionState> {
   await pause();
   return {

@@ -181,6 +181,21 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </div>
             )}
 
+            {/* Reserving matters most when it is sold out, but wanting it on a
+                particular day is just as common. */}
+            {!product.isSoldOut && (
+              <p className="text-sm leading-relaxed text-ink-700">
+                Need it on a particular day?{" "}
+                <Link
+                  href={`/reserve?product=${product.slug}`}
+                  className="font-semibold text-accent underline underline-offset-4"
+                >
+                  Reserve it
+                </Link>{" "}
+                and we will have it waiting.
+              </p>
+            )}
+
             {product.leadTimeHours > 0 && (
               <p className="rounded-xl bg-cream-100 px-5 py-4 text-sm leading-relaxed text-ink-700">
                 <strong className="text-ink-900">Please order ahead.</strong> This one is made to order and

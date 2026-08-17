@@ -63,8 +63,9 @@ model Product {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
 
-  variants   ProductVariant[]
-  orderItems OrderItem[]
+  variants     ProductVariant[]
+  orderItems   OrderItem[]
+  reservations Reservation[]
 
   @@index([categoryId])
 }
@@ -148,6 +149,44 @@ model CustomCakeRequest {
   createdAt   DateTime  @default(now())
 
   @@index([status, createdAt])
+}
+
+/// A customer asking for something they could not get today — usually a
+/// sold-out item — to be made or set aside for a chosen date.
+///
+/// Deliberately NOT an Order: at this point nothing is priced or paid. The
+/// bakery confirms it can make the item first, and the customer's `Order`
+/// (if any) comes later. `priceRwfAtRequest` records what the item cost when
+/// they asked, so a later price change is visible rather than silent.
+model Reservation {
+  id       String @id @default(cuid())
+  /// Short reference to quote over the phone, e.g. "RS-7K3M2A".
+  reference String @unique
+
+  customerName  String
+  customerPhone String
+  customerEmail String?
+
+  /// What they want, snapshotted so the record survives product edits.
+  productNameSnapshot String
+  variantName         String?
+  quantity            Int     @default(1)
+  priceRwfAtRequest   Int?
+
+  requestedDate DateTime
+  timeWindow    String?
+  notes         String?
+
+  status String @default("NEW") // NEW | CONFIRMED | READY | COLLECTED | CANCELLED
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([status, requestedDate])
+  @@index([createdAt])
 }
 
 model ContactMessage {

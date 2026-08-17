@@ -57,10 +57,18 @@ export function AddToCart({
   }
 
   if (product.isSoldOut) {
+    // Sold out used to be a dead disabled button — the exact dead end the
+    // client wanted fixed. Now it sends them to reserve it for another day.
     return (
-      <Button variant="outline" disabled className={cn(layout === "card" && "w-full px-4 py-2.5 text-xs")}>
-        Sold out today
-      </Button>
+      <Link
+        href={`/reserve?product=${product.slug}`}
+        className={cn(
+          "inline-flex items-center justify-center gap-2 rounded-full bg-wine-800 font-semibold text-paper-50 transition-colors hover:bg-wine-700",
+          layout === "card" ? "w-full px-4 py-2.5 text-xs" : "px-7 py-3.5 text-sm",
+        )}
+      >
+        Sold out — reserve it
+      </Link>
     );
   }
 

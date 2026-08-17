@@ -37,6 +37,26 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   CANCELLED: "Cancelled",
 };
 
+export const RESERVATION_STATUSES = [
+  "NEW",
+  "CONFIRMED",
+  "READY",
+  "COLLECTED",
+  "CANCELLED",
+] as const;
+export type ReservationStatus = (typeof RESERVATION_STATUSES)[number];
+
+export const RESERVATION_STATUS_LABELS: Record<ReservationStatus, string> = {
+  NEW: "New",
+  CONFIRMED: "Confirmed",
+  READY: "Ready to collect",
+  COLLECTED: "Collected",
+  CANCELLED: "Cancelled",
+};
+
+/** Reservations the kitchen still owes the customer something for. */
+export const OPEN_RESERVATION_STATUSES: ReservationStatus[] = ["NEW", "CONFIRMED", "READY"];
+
 export const REQUEST_STATUSES = ["NEW", "CONTACTED", "QUOTED", "CLOSED"] as const;
 export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 

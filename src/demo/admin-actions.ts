@@ -19,4 +19,5 @@ export async function logout(): Promise<void> {
 
 export async function updateOrderStatus(): Promise<void> {}
 export async function updateRequestStatus(): Promise<void> {}
+export async function updateReservationStatus(): Promise<void> {}
 export async function toggleMessageRead(): Promise<void> {}

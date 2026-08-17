@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { generateReservationReference } from "@/lib/reservations";
 import { ActionState, Validator, todayUtc } from "@/lib/validation";
 
 export async function submitContactMessage(
@@ -25,6 +26,77 @@ export async function submitContactMessage(
   return {
     ok: true,
     message: "Thank you — your message is with us. We reply to everything within one working day.",
+  };
+}
+
+/**
+ * A customer reserving something for a later date — normally because it was
+ * sold out when they came looking.
+ *
+ * The product is re-read from the database rather than trusted from the form,
+ * and its name and price are snapshotted so the record still makes sense after
+ * the menu changes.
+ */
+export async function submitReservation(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const v = new Validator(formData);
+  const productId = v.required("productId", "Product", { max: 60 });
+  const customerName = v.required("customerName", "Name", { max: 120 });
+  const customerPhone = v.phone("customerPhone", "Phone number");
+  const customerEmail = v.email("customerEmail", "Email");
+  const quantity = v.integer("quantity", "Quantity", { required: true, min: 1, max: 500 }) ?? 1;
+  const notes = v.optional("notes", "Notes", { max: 1000 });
+  const timeWindow = v.optional("timeWindow", "Time window", { max: 40 });
+
+  // Reservations are for another day, so today is not a valid choice.
+  const tomorrow = new Date(todayUtc());
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  const requestedDate = v.date("requestedDate", "Date", { required: true, notBefore: tomorrow });
+  if (!v.errors.requestedDate && requestedDate && requestedDate.getTime() < tomorrow.getTime()) {
+    v.errors.requestedDate = "Reservations are for a future day — please pick tomorrow or later.";
+  }
+
+  if (v.hasErrors) {
+    return { ok: false, errors: v.errors, message: "Please check the highlighted fields." };
+  }
+
+  const product = await prisma.product.findFirst({
+    where: { id: productId, isActive: true },
+    include: { variants: true },
+  });
+  if (!product) {
+    return { ok: false, message: "That item is no longer on the menu. Please pick another." };
+  }
+
+  const variantId = formData.get("variantId");
+  const variant =
+    typeof variantId === "string" && variantId
+      ? product.variants.find((x) => x.id === variantId) ?? null
+      : null;
+
+  const reference = await generateReservationReference();
+  await prisma.reservation.create({
+    data: {
+      reference,
+      customerName,
+      customerPhone,
+      customerEmail,
+      productId: product.id,
+      productNameSnapshot: product.name,
+      variantName: variant?.name ?? null,
+      quantity,
+      priceRwfAtRequest: variant?.priceRwf ?? product.priceRwf,
+      requestedDate: requestedDate!,
+      timeWindow,
+      notes,
+    },
+  });
+
+  return {
+    ok: true,
+    message: `Reserved — your reference is ${reference}. We will confirm on WhatsApp that it will be ready for you.`,
   };
 }
 

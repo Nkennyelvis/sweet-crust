@@ -12,6 +12,7 @@ const SHOP_LINKS = [
 
 const SITE_LINKS = [
   { href: "/patisseries", label: "Patisserie Menu" },
+  { href: "/reserve", label: "Reserve an Item" },
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
   { href: "/cart", label: "Cart" },

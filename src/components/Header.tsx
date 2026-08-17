@@ -11,6 +11,7 @@ import { getTheme } from "@/lib/theme";
 const NAV_ITEMS = [
   { href: "/patisseries", label: "Patisseries" },
   { href: "/custom-cakes", label: "Custom Cakes" },
+  { href: "/reserve", label: "Reserve" },
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
 ];

@@ -9,7 +9,12 @@ import {
   setStaffSessionCookie,
   verifyPassword,
 } from "@/lib/auth";
-import { ORDER_STATUSES, REQUEST_STATUSES, type StaffRole } from "@/lib/enums";
+import {
+  ORDER_STATUSES,
+  REQUEST_STATUSES,
+  RESERVATION_STATUSES,
+  type StaffRole,
+} from "@/lib/enums";
 import { ActionState, Validator } from "@/lib/validation";
 
 export async function login(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -57,6 +62,17 @@ export async function updateRequestStatus(formData: FormData) {
 
   await prisma.customCakeRequest.update({ where: { id }, data: { status } });
   revalidatePath("/admin/custom-cakes");
+}
+
+export async function updateReservationStatus(formData: FormData) {
+  await requireStaff();
+  const id = String(formData.get("reservationId") ?? "");
+  const status = String(formData.get("status") ?? "");
+  if (!id || !(RESERVATION_STATUSES as readonly string[]).includes(status)) return;
+
+  await prisma.reservation.update({ where: { id }, data: { status } });
+  revalidatePath("/admin");
+  revalidatePath("/admin/reservations");
 }
 
 export async function toggleMessageRead(formData: FormData) {

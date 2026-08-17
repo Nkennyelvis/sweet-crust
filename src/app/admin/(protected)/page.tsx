@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { Badge, Card, GoldRule } from "@/components/ui";
 import { formatRwf } from "@/lib/currency";
-import { OPEN_ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/enums";
+import {
+  OPEN_ORDER_STATUSES,
+  OPEN_RESERVATION_STATUSES,
+  ORDER_STATUS_LABELS,
+  type OrderStatus,
+} from "@/lib/enums";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { todayUtc } from "@/lib/validation";
@@ -16,8 +21,17 @@ export default async function AdminDashboard() {
   // stored (UTC midnight, parsed from a date-only string). Using local
   // midnight here would mis-bucket same-day orders whenever the server is not
   // running in UTC.
-  const [dueToday, openOrders, newRequests, unreadMessages, monthRevenue, recentOrders, soldOut] =
-    await Promise.all([
+  const [
+    dueToday,
+    openOrders,
+    newRequests,
+    unreadMessages,
+    monthRevenue,
+    recentOrders,
+    soldOut,
+    openReservations,
+    reservationsDueToday,
+  ] = await Promise.all([
       prisma.order.count({
         where: {
           requestedDate: { gte: today, lt: tomorrow },
@@ -33,6 +47,13 @@ export default async function AdminDashboard() {
       }),
       prisma.order.findMany({ orderBy: { createdAt: "desc" }, take: 8, include: { items: true } }),
       prisma.product.findMany({ where: { isSoldOut: true, isActive: true }, select: { id: true, name: true } }),
+      prisma.reservation.count({ where: { status: { in: OPEN_RESERVATION_STATUSES } } }),
+      prisma.reservation.count({
+        where: {
+          status: { in: OPEN_RESERVATION_STATUSES },
+          requestedDate: { gte: today, lt: tomorrow },
+        },
+      }),
     ]);
 
   return (
@@ -44,9 +65,15 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
         <Stat label="Due today" value={String(dueToday)} href="/admin/orders?due=today" />
         <Stat label="Open orders" value={String(openOrders)} href="/admin/orders" />
+        <Stat
+          label="Open reservations"
+          value={String(openReservations)}
+          hint={reservationsDueToday > 0 ? `${reservationsDueToday} due today` : undefined}
+          href="/admin/reservations"
+        />
         <Stat label="Revenue this month" value={formatRwf(monthRevenue._sum.totalRwf ?? 0)} />
         <Stat
           label="Needs a reply"
@@ -59,7 +86,8 @@ export default async function AdminDashboard() {
         <Card className="mt-8 border-amber-500/30 bg-amber-500/5 p-5">
           <p className="text-sm text-ink-900">
             <strong>{soldOut.length}</strong>{" "}
-            {soldOut.length === 1 ? "product is" : "products are"} marked sold out and hidden from ordering:{" "}
+            {soldOut.length === 1 ? "product is" : "products are"} marked sold out — customers can still
+            reserve {soldOut.length === 1 ? "it" : "them"} for another day:{" "}
             <span className="text-ink-700">{soldOut.map((p) => p.name).join(", ")}</span>.{" "}
             <Link href="/admin/products" className="font-semibold text-accent underline underline-offset-4">
               Manage stock
@@ -134,11 +162,22 @@ export default async function AdminDashboard() {
   );
 }
 
-function Stat({ label, value, href }: { label: string; value: string; href?: string }) {
+function Stat({
+  label,
+  value,
+  href,
+  hint,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  hint?: string;
+}) {
   const body = (
     <Card className="p-6 transition-shadow hover:shadow-md">
       <p className="text-xs font-semibold uppercase tracking-wider text-ink-700">{label}</p>
       <p className="mt-2 font-display text-3xl text-accent">{value}</p>
+      {hint && <p className="mt-1 text-xs font-medium text-ink-700">{hint}</p>}
     </Card>
   );
   return href ? <Link href={href}>{body}</Link> : body;
